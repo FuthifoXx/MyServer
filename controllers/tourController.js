@@ -1,5 +1,12 @@
 const Tour = require('../model/tourModel');
 
+exports.aliasTopTours = (req, res, next) => {
+  //this middleware is for manipulating the query object, or prefilling the query string for the user just to make life easy.
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
 exports.getAllTours = async (req, res) => {
   try {
     console.log(req.query);

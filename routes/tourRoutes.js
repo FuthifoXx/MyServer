@@ -8,6 +8,7 @@ router
   .get(tourController.aliasTopTours, tourController.getAllTours); // we created a aliasTopTours middleware
 
 router.route('/tour-stats').get(tourController.getTourStats);
+router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
 
 router
   .route('/')

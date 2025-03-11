@@ -47,16 +47,9 @@ exports.getTour = async (req, res) => {
   } catch (error) {
     res.status(400).json({
       status: 'fail',
-      message: err
+      message: error
     });
   }
-
-  // res.status(200).json({
-  //   status: 'success',
-  //   data: {
-  //     tour
-  //   }
-  // });
 };
 
 exports.createTour = async (req, res) => {

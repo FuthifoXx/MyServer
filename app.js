@@ -24,9 +24,26 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
 app.all('*', (req, res, next) => {
-  res.status(404).json({
-    status: 'fail',
-    message: `Can't find ${req.originalUrl} on this`
+  // res.status(404).json({
+  //   status: 'fail',
+  //   message: `Can't find ${req.originalUrl} on this`
+  // });
+
+  const error = new Error(`Cant't find ${req.originalUrl} on this server`);
+  error.status = 'fail';
+  error.statusCode = 404;
+
+  next(error);
+});
+
+//ERROR HANDLING MIDDLEWARE
+app.use((error, req, res, next) => {
+  error.statusCode = error.statusCode || 500;
+  error.status = error.status || 'error';
+
+  res.status(error.statusCode).json({
+    status: error.status,
+    message: error.message
   });
 });
 

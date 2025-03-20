@@ -55,6 +55,13 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
+userSchema.pre('save', function(next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 userSchema.methods.correctPassword = async function(
   candidatePassword,
   userPassword
@@ -75,7 +82,7 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
   return false;
 };
 
-userSchema.method.createPasswordResetToken = function() {
+userSchema.methods.createPasswordResetToken = function() {
   //This token is what we gonna send to the user
   const resetToken = crypto.randomBytes(32).toString('hex');
   this.passwordResetToken = crypto

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const validator = require('validator');
+const User = require('./userModal');
+// const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -102,7 +103,8 @@ const tourSchema = new mongoose.Schema(
         description: String,
         day: Number
       }
-    ]
+    ],
+    guides: Array
   },
   {
     toJSON: { virtuals: true },
@@ -121,6 +123,12 @@ tourSchema.virtual('durationWeeks').get(function() {
 tourSchema.pre('save', function(next) {
   this.slug = slugify(this.name, { lower: true });
   //this keyword point to the current document
+  next();
+});
+
+tourSchema.pre('save', async function(next) {
+  const guidesPromises = this.guides.map(async id => await User.findById(id));
+  this.guides = await Promise.all(guidesPromises);
   next();
 });
 
@@ -153,6 +161,8 @@ tourSchema.post(/^find/, function(docs, next) {
   next();
 });
 
+//AGGREGATION MIDDLEWARE?
+//Aggregation middleware in Mongoose allows you to modify aggregation pipelines before execution. It is useful for adding filters, logging, or transforming data in aggregation queries.
 tourSchema.pre('aggregate', function(next) {
   //this keyword point to current aggregation object
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
@@ -161,8 +171,6 @@ tourSchema.pre('aggregate', function(next) {
   next();
 });
 
-//AGGREGATION MIDDLEWARE?
-//Aggregation middleware in Mongoose allows you to modify aggregation pipelines before execution. It is useful for adding filters, logging, or transforming data in aggregation queries.
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;

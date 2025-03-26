@@ -33,13 +33,20 @@ const reviewSchema = new mongoose.Schema(
 );
 
 reviewSchema.pre(/^find/, function(next) {
+  //   this.populate({
+  //     path: 'tour',
+  //     select: 'name'
+  //   }).populate({
+  //     path: 'user',
+  //     select: 'name photo'
+  //   });
+
+  //I used this code to prevent over population
   this.populate({
-    path: 'tour',
-    select: 'name'
-  }).populate({
     path: 'user',
     select: 'name photo'
   });
+
   next();
 });
 
